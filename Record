@@ -1,0 +1,52 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract EigenTapiz {
+
+    // --- Ω persistente ---
+    struct Estado {
+        uint256 tiempo;
+        string nota;
+        int256 intensidad; // eco del "lambda"
+    }
+
+    Estado[] public omega;
+
+    // --- nodos (activos como primos) ---
+    string[] public activos;
+
+    // --- tapiz (relaciones emergentes) ---
+    mapping(uint256 => mapping(uint256 => int256)) public T;
+
+    // --- eventos (huellas del sistema) ---
+    event NodoCreado(uint256 id, string nombre);
+    event RelacionActualizada(uint256 i, uint256 j, int256 valor);
+    event EstadoRegistrado(uint256 tiempo, string nota, int256 intensidad);
+
+    // --- agregar activo ---
+    function agregarActivo(string memory nombre) public {
+        activos.push(nombre);
+        emit NodoCreado(activos.length - 1, nombre);
+    }
+
+    // --- escribir en el tapiz ---
+    function escribirRelacion(uint256 i, uint256 j, int256 valor) public {
+        T[i][j] = valor;
+        emit RelacionActualizada(i, j, valor);
+    }
+
+    // --- registrar estado Ω ---
+    function registrarEstado(string memory nota, int256 intensidad) public {
+        omega.push(Estado(block.timestamp, nota, intensidad));
+        emit EstadoRegistrado(block.timestamp, nota, intensidad);
+    }
+
+    // --- lectura libre ---
+    function verActivos() public view returns (string[] memory) {
+        return activos;
+    }
+
+    function verEstado(uint256 index) public view returns (Estado memory) {
+        return omega[index];
+    }
+}
